@@ -1,9 +1,12 @@
 import numpy as np
+from numpy.typing import ArrayLike
 from typing import List, Any
 from datetime import date
 
 
-def date_grid(dates: List[date], data: List[Any], flip: bool, dtype: str = "float64"):
+def date_grid(
+    dates: List[date], data: List[Any], flip: bool, dtype: str = "float64"
+) -> ArrayLike:
     # Array with columns (iso year, iso week number, iso weekday).
     iso_dates = np.array([day.isocalendar for day in dates])
     # Unique weeks, as defined by the tuple (iso year, iso week).
