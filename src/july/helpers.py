@@ -91,11 +91,15 @@ def add_weekday_label(ax, flip: bool) -> None:
     if flip:
         ax.tick_params(axis="y", which="major", pad=8)
         ax.set_yticks([x + 0.5 for x in range(0, 7)])
-        ax.set_yticklabels(calendar.weekheader(width=1).split(" "))
+        ax.set_yticklabels(
+            calendar.weekheader(width=1).split(" "), fontname="monospace"
+        )
     else:
         ax.tick_params(axis="x", which="major", pad=4)
         ax.set_xticks([x + 0.5 for x in range(0, 7)])
-        ax.set_xticklabels(calendar.weekheader(width=1).split(" "))
+        ax.set_xticklabels(
+            calendar.weekheader(width=1).split(" "), fontname="monospace"
+        )
         ax.xaxis.tick_top()
 
 
