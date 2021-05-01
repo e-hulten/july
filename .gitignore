@@ -1,2 +1,6 @@
 venv
 .idea
+notebooks
+build
+dist
+*egg-info
