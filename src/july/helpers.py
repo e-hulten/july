@@ -36,9 +36,12 @@ def date_grid(
 
 def cal_heatmap(
     cal: ArrayLike,
+    dates,
     flip: bool,
     cmap: str = "Greens",
     colorbar: bool = False,
+    date_label: bool = False,
+    # grid_lines=True,
     ax: Optional[Tuple[int]] = None,
 ):
     if not ax:
@@ -55,6 +58,8 @@ def cal_heatmap(
         cax = fig.add_axes([bbox.x1 + 0.015, bbox.y0, 0.015, bbox.height])
         plt.colorbar(pc, cax=cax)
 
+    if date_label:
+        add_date_label(ax, dates, flip)
     if flip:
         ax.set_yticks([x + 0.5 for x in range(0, 7)])
         ax.set_yticklabels(calendar.weekheader(width=1).split(" "))
@@ -66,3 +71,15 @@ def cal_heatmap(
     ax.tick_params(axis="both", which="both", length=0)
 
     return ax
+
+
+def add_date_label(ax, dates: List[date], flip: bool):
+    days = [day.day for day in dates]
+    grid = date_grid(dates, days, flip)
+
+    for i, j in np.ndindex(grid.shape):
+        try:
+            ax.text(j + 0.5, i + 0.5, int(date_grid[i, j]), ha="center", va="center")
+        except ValueError:
+            # If date_grid[i, j] is nan.
+            pass
