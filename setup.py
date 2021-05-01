@@ -12,7 +12,14 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/e-hulten/july/",
-    keywords=["heatmap", "visualisation", "calendar", "daily", "matplotlib", "github plot"],
+    keywords=[
+        "heatmap",
+        "visualisation",
+        "calendar",
+        "daily",
+        "matplotlib",
+        "github plot",
+    ],
     classifiers=[
         "Topic :: Scientific/Engineering :: Visualization",
         "Programming Language :: Python :: 3",
