@@ -43,6 +43,7 @@ def cal_heatmap(
     colorbar: bool = False,
     date_label: bool = False,
     month_label: bool = False,
+    year_label: bool = False,
     # grid_lines=True,
     ax: Optional[Tuple[int]] = None,
 ):
@@ -64,6 +65,8 @@ def cal_heatmap(
         add_date_label(ax, dates, flip)
     if month_label:
         add_month_label(ax, dates, flip)
+    if year_label:
+        add_year_label(ax, dates, flip)
     if flip:
         ax.set_yticks([x + 0.5 for x in range(0, 7)])
         ax.set_yticklabels(calendar.weekheader(width=1).split(" "))
@@ -79,9 +82,9 @@ def cal_heatmap(
 
 def add_date_label(ax, dates: List[date], flip: bool) -> None:
     days = [day.day for day in dates]
-    grid = date_grid(dates, days, flip)
+    day_grid = date_grid(dates, days, flip)
 
-    for i, j in np.ndindex(grid.shape):
+    for i, j in np.ndindex(day_grid.shape):
         try:
             ax.text(j + 0.5, i + 0.5, int(date_grid[i, j]), ha="center", va="center")
         except ValueError:
@@ -90,9 +93,7 @@ def add_date_label(ax, dates: List[date], flip: bool) -> None:
 
 
 def add_month_label(ax, dates: List[date], flip: bool) -> None:
-    # Uniquely define months with string tuple (YYYY, MM).
     month_years = [(day.year, day.month) for day in dates]
-    # Convert tuples to string. Get grid with entries "(YYYY, MM)".
     month_years_str = list(map(str, month_years))
     month_year_grid = date_grid(dates, month_years_str, flip, dtype="object")
 
@@ -113,3 +114,40 @@ def add_month_label(ax, dates: List[date], flip: bool) -> None:
     else:
         ax.set_yticks([*month_locs.values()])
         ax.set_yticklabels(month_labels, fontsize=14, rotation=90)
+
+
+def add_year_label(ax, dates, flip):
+    years = [day.year for day in dates]
+    year_grid = date_grid(dates, years, flip)
+    unique_years = sorted(set(years))
+
+    year_locs = {}
+    for year in unique_years:
+        yy, xx = np.nonzero(year_grid == year)
+        year_locs[year] = (xx.max() + xx.min() if flip else yy.max() + yy.min()) / 2
+
+    if flip:
+        for year, loc in year_locs.items():
+            ax.annotate(
+                year,
+                (loc / year_grid.shape[1], 1),
+                (0, 10),
+                xycoords="axes fraction",
+                textcoords="offset points",
+                fontname="monospace",
+                fontsize=35,
+                va="center",
+            )
+    else:
+        for year, loc in year_locs.items():
+            ax.annotate(
+                year,
+                (0, 1 - loc / len(year_grid)),
+                (-40, 0),
+                xycoords="axes fraction",
+                textcoords="offset points",
+                rotation=90,
+                fontname="monospace",
+                fontsize=16,
+                va="center",
+            )
