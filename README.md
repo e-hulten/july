@@ -9,6 +9,6 @@ The reasoning was roughly as follows:
 - **Q**: What is this package doing?
 - **A**: Create heatmaps of daily data, grouped by month and year.
 - **Q**: Heat... month... year... Every year is the hottest year ever nowadays, but what is the hottest month?
-- **A**: :sparkle: :sparkle: :sparkle: July :sparkle: :sparkle: :sparkle:  
+- **A**: :sparkles: :sparkles: :sparkles: July :sparkles: :sparkles: :sparkles:  
 
-Also, July is my favourite month. By a light year.
+Also, July is my favourite month by a light year.
