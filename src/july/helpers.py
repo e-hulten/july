@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 from numpy.typing import ArrayLike
 from typing import List, Tuple, Any, Optional
 from datetime import date
-from datetime import datetime as dt
 
 
 def date_grid(
@@ -42,6 +41,7 @@ def cal_heatmap(
     cmap: str = "Greens",
     colorbar: bool = False,
     date_label: bool = False,
+    weekday_label: bool = True,
     month_label: bool = False,
     year_label: bool = False,
     # grid_lines=True,
@@ -63,17 +63,12 @@ def cal_heatmap(
 
     if date_label:
         add_date_label(ax, dates, flip)
+    if weekday_label:
+        add_weekday_label(ax, flip)
     if month_label:
         add_month_label(ax, dates, flip)
     if year_label:
         add_year_label(ax, dates, flip)
-    if flip:
-        ax.set_yticks([x + 0.5 for x in range(0, 7)])
-        ax.set_yticklabels(calendar.weekheader(width=1).split(" "))
-    else:
-        ax.set_xticks([x + 0.5 for x in range(0, 7)])
-        ax.set_xticklabels(calendar.weekheader(width=1).split(" "))
-        ax.xaxis.tick_top()
 
     ax.tick_params(axis="both", which="both", length=0)
 
@@ -90,6 +85,16 @@ def add_date_label(ax, dates: List[date], flip: bool) -> None:
         except ValueError:
             # If date_grid[i, j] is nan.
             pass
+
+
+def add_weekday_label(ax, flip: bool) -> None:
+    if flip:
+        ax.set_yticks([x + 0.5 for x in range(0, 7)])
+        ax.set_yticklabels(calendar.weekheader(width=1).split(" "))
+    else:
+        ax.set_xticks([x + 0.5 for x in range(0, 7)])
+        ax.set_xticklabels(calendar.weekheader(width=1).split(" "))
+        ax.xaxis.tick_top()
 
 
 def add_month_label(ax, dates: List[date], flip: bool) -> None:
