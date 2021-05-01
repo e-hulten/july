@@ -1,6 +1,8 @@
+import calendar
 import numpy as np
+import matplotlib.pyplot as plt
 from numpy.typing import ArrayLike
-from typing import List, Any
+from typing import List, Tuple, Any, Optional
 from datetime import date
 
 
@@ -30,3 +32,37 @@ def date_grid(
         return grid.T
 
     return grid
+
+
+def cal_heatmap(
+    cal: ArrayLike,
+    flip: bool,
+    cmap: str = "Greens",
+    colorbar: bool = False,
+    ax: Optional[Tuple[int]] = None,
+):
+    if not ax:
+        figsize = (10, 5) if flip else (5, 10)
+        fig, ax = plt.subplots(figsize=figsize, dpi=100)
+
+    pc = ax.pcolormesh(cal, edgecolors="white", linewidth=0.25, cmap=cmap)
+    ax.invert_yaxis()
+    ax.set_aspect("equal")
+
+    if colorbar:
+        bbox = ax.get_position()
+        # Specify location and dimensions: [left, bottom, width, height].
+        cax = fig.add_axes([bbox.x1 + 0.015, bbox.y0, 0.015, bbox.height])
+        plt.colorbar(pc, cax=cax)
+
+    if flip:
+        ax.set_yticks([x + 0.5 for x in range(0, 7)])
+        ax.set_yticklabels(calendar.weekheader(width=1).split(" "))
+    else:
+        ax.set_xticks([x + 0.5 for x in range(0, 7)])
+        ax.set_xticklabels(calendar.weekheader(width=1).split(" "))
+        ax.xaxis.tick_top()
+
+    ax.tick_params(axis="both", which="both", length=0)
+
+    return ax
