@@ -10,13 +10,13 @@ def date_grid(
     dates: List[date], data: List[Any], flip: bool, dtype: str = "float64"
 ) -> ArrayLike:
     # Array with columns (iso year, iso week number, iso weekday).
-    iso_dates = np.array([day.isocalendar for day in dates])
+    iso_dates = np.array([day.isocalendar() for day in dates])
     # Unique weeks, as defined by the tuple (iso year, iso week).
     unique_weeks = sorted(list(set([tuple(row) for row in iso_dates[:, :2]])))
 
     # Get dict that maps week tuple to week index in grid.
     weeknum2idx = {week: i for i, week in enumerate(unique_weeks)}
-    week_coords = np.array([weeknum2idx[week] for week in iso_dates[:, :2]])
+    week_coords = np.array([weeknum2idx[tuple(week)] for week in iso_dates[:, :2]])
     day_coords = iso_dates[:, 2] - 1
 
     # Define shape of grid.
@@ -44,7 +44,6 @@ def cal_heatmap(
     weekday_label: bool = True,
     month_label: bool = False,
     year_label: bool = False,
-    # grid_lines=True,
     ax: Optional[Tuple[int]] = None,
 ):
     if not ax:
@@ -59,7 +58,8 @@ def cal_heatmap(
         bbox = ax.get_position()
         # Specify location and dimensions: [left, bottom, width, height].
         cax = fig.add_axes([bbox.x1 + 0.015, bbox.y0, 0.015, bbox.height])
-        plt.colorbar(pc, cax=cax)
+        cbar = plt.colorbar(pc, cax=cax)
+        cbar.ax.tick_params(size=0)
 
     if date_label:
         add_date_label(ax, dates, flip)
@@ -121,10 +121,10 @@ def add_month_label(ax, dates: List[date], flip: bool) -> None:
 
     if flip:
         ax.set_xticks([*month_locs.values()])
-        ax.set_xticklabels(month_labels, fontsize=14)
+        ax.set_xticklabels(month_labels, fontsize=14, fontname="monospace")
     else:
         ax.set_yticks([*month_locs.values()])
-        ax.set_yticklabels(month_labels, fontsize=14, rotation=90)
+        ax.set_yticklabels(month_labels, fontsize=14, fontname="monospace", rotation=90)
 
 
 def add_year_label(ax, dates, flip):
@@ -135,7 +135,9 @@ def add_year_label(ax, dates, flip):
     year_locs = {}
     for year in unique_years:
         yy, xx = np.nonzero(year_grid == year)
-        year_locs[year] = (xx.max() + xx.min() if flip else yy.max() + yy.min()) / 2
+        year_locs[year] = (
+            xx.max() + 1 + xx.min() if flip else yy.max() + 1 + yy.min()
+        ) / 2
 
     if flip:
         for year, loc in year_locs.items():
@@ -146,8 +148,9 @@ def add_year_label(ax, dates, flip):
                 xycoords="axes fraction",
                 textcoords="offset points",
                 fontname="monospace",
-                fontsize=35,
+                fontsize=16,
                 va="center",
+                ha="center",
             )
     else:
         for year, loc in year_locs.items():
