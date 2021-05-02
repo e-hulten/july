@@ -81,7 +81,7 @@ def add_date_label(ax, dates: List[date], flip: bool) -> None:
 
     for i, j in np.ndindex(day_grid.shape):
         try:
-            ax.text(j + 0.5, i + 0.5, int(date_grid[i, j]), ha="center", va="center")
+            ax.text(j + 0.5, i + 0.5, int(day_grid[i, j]), ha="center", va="center")
         except ValueError:
             # If date_grid[i, j] is nan.
             pass
@@ -114,17 +114,21 @@ def add_month_label(ax, dates: List[date], flip: bool) -> None:
     for month in unique_month_years:
         # Get 'avg' x, y coordinates of elements in grid equal to month_year.
         yy, xx = np.nonzero(month_year_grid == str(month))
-        month_locs[month] = (xx.max() + xx.min() if flip else yy.max() + yy.min()) / 2
+        month_locs[month] = (
+            xx.max() + 1 + xx.min() if flip else yy.max() + 1 + yy.min()
+        ) / 2
 
     # Get month label for each unique month_year.
     month_labels = [calendar.month_abbr[x[1]] for x in month_locs.keys()]
 
     if flip:
         ax.set_xticks([*month_locs.values()])
-        ax.set_xticklabels(month_labels, fontsize=14, fontname="monospace")
+        ax.set_xticklabels(month_labels, fontsize=14, fontname="monospace", ha="center")
     else:
         ax.set_yticks([*month_locs.values()])
-        ax.set_yticklabels(month_labels, fontsize=14, fontname="monospace", rotation=90)
+        ax.set_yticklabels(
+            month_labels, fontsize=14, fontname="monospace", rotation=90, va="center"
+        )
 
 
 def add_year_label(ax, dates, flip):
@@ -167,7 +171,9 @@ def add_year_label(ax, dates, flip):
             )
 
 
-def get_month_outline(month_grid, flip):
+def get_month_outline(dates, month_grid, flip, month):
+    # This code is so ugly I'm amazed that it works.
+    day_grid = date_grid(dates, dates, flip=False, dtype="object")
     if flip:
         month_grid = month_grid.T
 
@@ -176,12 +182,14 @@ def get_month_outline(month_grid, flip):
     for y in range(nrows):
         for x in range(ncols):
             if np.isfinite(month_grid[y, x]):
-                coords_list.append((x, y))
+                if day_grid[y, x].month == month:
+                    coords_list.append((x, y))
 
     sorted_coords = np.array(coords_list)
+    min_y = sorted_coords[:, 1].min()
     max_y = sorted_coords[:, 1].max()
     upper_left = sorted_coords[0]
-    upper_right = np.array([7, 0])
+    upper_right = np.array([7, min_y])
     lower_right = np.array([7, max_y])
     lower_right2 = sorted_coords[-1] + np.array([1, 1])
 
