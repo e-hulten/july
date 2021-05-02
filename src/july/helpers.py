@@ -165,3 +165,48 @@ def add_year_label(ax, dates, flip):
                 fontsize=16,
                 va="center",
             )
+
+
+def get_month_outline(month_grid, flip):
+    if flip:
+        month_grid = month_grid.T
+
+    nrows, ncols = month_grid.shape
+    coords_list = []
+    for y in range(nrows):
+        for x in range(ncols):
+            if np.isfinite(month_grid[y, x]):
+                coords_list.append((x, y))
+
+    sorted_coords = np.array(coords_list)
+    max_y = sorted_coords[:, 1].max()
+    upper_left = sorted_coords[0]
+    upper_right = np.array([7, 0])
+    lower_right = np.array([7, max_y])
+    lower_right2 = sorted_coords[-1] + np.array([1, 1])
+
+    lower_right1 = (
+        lower_right2
+        if np.array_equal(lower_right, lower_right2)
+        else lower_right2 - np.array([0, 1])
+    )
+    lower_left = np.array([0, sorted_coords[:, 1].max() + 1])
+    corner_last = upper_left + np.array([0, 1])
+    second_last = np.copy(corner_last)
+    second_last[0] = 0
+
+    coords = np.array(
+        [
+            upper_left,
+            upper_right,
+            lower_right,
+            lower_right1,
+            lower_right2,
+            lower_left,
+            second_last,
+            corner_last,
+            upper_left,
+        ]
+    )
+
+    return coords[:, [1, 0]] if flip else coords
