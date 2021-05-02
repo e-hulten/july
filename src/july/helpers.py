@@ -38,28 +38,31 @@ def cal_heatmap(
     cal: ArrayLike,
     dates,
     flip: bool,
+    title=None,
     cmap: str = "Greens",
     colorbar: bool = False,
     date_label: bool = False,
     weekday_label: bool = True,
     month_label: bool = False,
     year_label: bool = False,
-    ax: Optional[Tuple[int]] = None,
+    month_grid: bool = False,
+    cmin=None,
+    cmax=None,
+    ax=None,
 ):
     if not ax:
         figsize = (10, 5) if flip else (5, 10)
         fig, ax = plt.subplots(figsize=figsize, dpi=100)
+    else:
+        fig = ax.get_figure()
 
-    pc = ax.pcolormesh(cal, edgecolors="white", linewidth=0.25, cmap=cmap)
+    ax.set_facecolor("white")
+
+    pc = ax.pcolormesh(cal, edgecolors=ax.get_facecolor(), linewidth=0.25, cmap=cmap)
+    pc.set_clim(cmin or np.nanmin(cal), cmax or np.nanmax(cal))
     ax.invert_yaxis()
     ax.set_aspect("equal")
-
-    if colorbar:
-        bbox = ax.get_position()
-        # Specify location and dimensions: [left, bottom, width, height].
-        cax = fig.add_axes([bbox.x1 + 0.015, bbox.y0, 0.015, bbox.height])
-        cbar = plt.colorbar(pc, cax=cax)
-        cbar.ax.tick_params(size=0)
+    bbox = ax.get_position()
 
     if date_label:
         add_date_label(ax, dates, flip)
@@ -69,9 +72,27 @@ def cal_heatmap(
         add_month_label(ax, dates, flip)
     if year_label:
         add_year_label(ax, dates, flip)
+    if month_grid:
+        add_month_grid(ax, dates, cal, flip)
+    if colorbar:
+        adj_bbox = ax.get_position()
+        height_diff = adj_bbox.height - bbox.height
+        # Specify location and dimensions: [left, bottom, width, height].
+        # This part is still not perfect when month_grid is True.
+        cax = fig.add_axes(
+            [
+                bbox.x1 + 0.015,
+                adj_bbox.y0 + height_diff / 2,
+                0.015,
+                bbox.height,
+            ]
+        )
+        cbar = plt.colorbar(pc, cax=cax)
+        cbar.ax.tick_params(size=0)
+    if title:
+        ax.set_title(title, fontname="monospace", fontsize=18, pad=25)
 
     ax.tick_params(axis="both", which="both", length=0)
-
     return ax
 
 
@@ -218,3 +239,19 @@ def get_month_outline(dates, month_grid, flip, month):
     )
 
     return coords[:, [1, 0]] if flip else coords
+
+
+def add_month_grid(ax, dates, month_grid, flip):
+    months = set([d.month for d in dates])
+    for month in months:
+        coords = get_month_outline(dates, month_grid, flip=flip, month=month)
+        ax.plot(coords[:, 0], coords[:, 1], color="black", linewidth=2)
+
+    # Pad axes so plotted line appears uniform also along edges.
+    ax.set_xlim(ax.get_xlim()[0] - 0.03, ax.get_xlim()[1] + 0.05)
+    ax.set_ylim(ax.get_ylim()[0] + 0.04, ax.get_ylim()[1] - 0.03)
+    f = ax.get_figure()
+    # Set frame in facecolor instead of turning off frame to keep cbar alignment.
+    for pos in ["top", "bottom", "right", "left"]:
+        ax.spines[pos].set_edgecolor(f.get_facecolor())
+    return ax
