@@ -17,6 +17,8 @@ def date_range(start_date: Union[str, date], end_date: Union[str, date]) -> List
 def preprocess_inputs(
     dates: List[Union[date, str]], data: List[Any]
 ) -> Tuple[List[date], List[Union[int, Any]]]:
+    # Convert strings to datetime.
+    dates = [dt.strptime(d, "%Y-%m-%d") if isinstance(d, str) else d for d in dates]
     # Strip datetimes to date.
     dates = [d.date() if isinstance(d, datetime) else d for d in dates]
     # Sort dates and values by dates.
