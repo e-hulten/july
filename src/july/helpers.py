@@ -2,7 +2,7 @@ import calendar
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.typing import ArrayLike
-from typing import List, Tuple, Any, Optional
+from typing import List, Any
 from datetime import date
 
 
