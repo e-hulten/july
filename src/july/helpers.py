@@ -47,7 +47,7 @@ def cal_heatmap(
     year_label: bool = True,
     month_grid: bool = False,
     colorbar: bool = False,
-    title: Optional[str] =None,
+    title: Optional[str] = None,
     cmin: Optional[int] = None,
     cmax: Optional[int] = None,
     ax: Optional[Axes] = None,
@@ -99,7 +99,7 @@ def cal_heatmap(
         cbar = plt.colorbar(pc, cax=cax)
         cbar.ax.tick_params(size=0)
     if title:
-        ax.set_title(title, fontname="monospace", fontsize=18, pad=25)
+        ax.set_title(title, fontname="monospace", fontsize=18, pad=28)
 
     ax.tick_params(axis="both", which="both", length=0)
     return ax
@@ -175,7 +175,7 @@ def add_year_label(ax, dates, flip):
             ax.annotate(
                 year,
                 (loc / year_grid.shape[1], 1),
-                (0, 10),
+                (0, 12),
                 xycoords="axes fraction",
                 textcoords="offset points",
                 fontname="monospace",
