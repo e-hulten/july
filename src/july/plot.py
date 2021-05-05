@@ -2,6 +2,7 @@ import numpy as np
 import calendar
 from typing import List, Any, Optional, Union
 from matplotlib.pyplot import Axes
+from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 from datetime import date, datetime
 from july.helpers import date_grid, cal_heatmap, add_date_label, get_month_outline
 from july.utils import preprocess_inputs, preprocess_month
@@ -11,7 +12,7 @@ def calendar_heatmap(
     dates: List[Union[str, date, datetime]],
     data: List[float],
     flip: bool = False,
-    cmap: str = "Greens",
+    cmap: Union[str, LinearSegmentedColormap, ListedColormap] = "Greens",
     value_label: bool = False,
     date_label: bool = False,
     weekday_label: bool = True,
@@ -51,7 +52,7 @@ def month_plot(
     dates: List[Union[str, date, datetime]],
     data: List[Any],
     flip: bool = False,
-    cmap: str = "Greens",
+    cmap: Union[str, LinearSegmentedColormap, ListedColormap] = "Greens",
     date_label: bool = False,
     weeknum_label: bool = True,
     cal_mode: bool = False,

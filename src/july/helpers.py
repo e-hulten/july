@@ -1,7 +1,9 @@
 import calendar
 import numpy as np
 import matplotlib.pyplot as plt
+from july.colormaps import cmaps_dict
 from matplotlib.pyplot import Axes
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from numpy.typing import ArrayLike
 from typing import List, Any, Optional
 from datetime import date
@@ -39,7 +41,7 @@ def cal_heatmap(
     cal: ArrayLike,
     dates: List[date],
     flip: bool,
-    cmap: str = "Greens",
+    cmap: Union[str, LinearSegmentedColormap, ListedColormap] = "Greens",
     value_label: bool = False,
     date_label: bool = False,
     weekday_label: bool = True,
@@ -57,6 +59,9 @@ def cal_heatmap(
         fig, ax = plt.subplots(figsize=figsize, dpi=100)
     else:
         fig = ax.get_figure()
+
+    if isinstance(cmap, str):
+        cmap = cmaps_dict[cmap]
 
     ax.set_facecolor("white")
 
