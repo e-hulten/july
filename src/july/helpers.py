@@ -1,8 +1,9 @@
 import calendar
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.pyplot import Axes
 from numpy.typing import ArrayLike
-from typing import List, Any
+from typing import List, Any, Optional
 from datetime import date
 
 
@@ -36,19 +37,20 @@ def date_grid(
 
 def cal_heatmap(
     cal: ArrayLike,
-    dates,
+    dates: List[date],
     flip: bool,
-    title=None,
     cmap: str = "Greens",
-    colorbar: bool = False,
+    value_label: bool = False,
     date_label: bool = False,
     weekday_label: bool = True,
-    month_label: bool = False,
-    year_label: bool = False,
+    month_label: bool = True,
+    year_label: bool = True,
     month_grid: bool = False,
-    cmin=None,
-    cmax=None,
-    ax=None,
+    colorbar: bool = False,
+    title: Optional[str] = None,
+    cmin: Optional[int] = None,
+    cmax: Optional[int] = None,
+    ax: Optional[Axes] = None,
 ):
     if not ax:
         figsize = (10, 5) if flip else (5, 10)
@@ -64,8 +66,15 @@ def cal_heatmap(
     ax.set_aspect("equal")
     bbox = ax.get_position()
 
+    if value_label:
+        for (i, j), z in np.ndenumerate(cal):
+            if np.isfinite(z):
+                # Add option to add value label as int.
+                ax.text(j + 0.5, i + 0.5, f"{z:0.1f}", ha="center", va="center")
     if date_label:
         add_date_label(ax, dates, flip)
+    else:
+        ax.set_xticklabels("")
     if weekday_label:
         add_weekday_label(ax, flip)
     if month_label:
@@ -90,7 +99,7 @@ def cal_heatmap(
         cbar = plt.colorbar(pc, cax=cax)
         cbar.ax.tick_params(size=0)
     if title:
-        ax.set_title(title, fontname="monospace", fontsize=18, pad=25)
+        ax.set_title(title, fontname="monospace", fontsize=18, pad=28)
 
     ax.tick_params(axis="both", which="both", length=0)
     return ax
@@ -100,12 +109,9 @@ def add_date_label(ax, dates: List[date], flip: bool) -> None:
     days = [day.day for day in dates]
     day_grid = date_grid(dates, days, flip)
 
-    for i, j in np.ndindex(day_grid.shape):
-        try:
-            ax.text(j + 0.5, i + 0.5, int(day_grid[i, j]), ha="center", va="center")
-        except ValueError:
-            # If date_grid[i, j] is nan.
-            pass
+    for (i, j), z in np.ndenumerate(day_grid):
+        if np.isfinite(z):
+            ax.text(j + 0.5, i + 0.5, int(z), ha="center", va="center")
 
 
 def add_weekday_label(ax, flip: bool) -> None:
@@ -113,13 +119,13 @@ def add_weekday_label(ax, flip: bool) -> None:
         ax.tick_params(axis="y", which="major", pad=8)
         ax.set_yticks([x + 0.5 for x in range(0, 7)])
         ax.set_yticklabels(
-            calendar.weekheader(width=1).split(" "), fontname="monospace"
+            calendar.weekheader(width=1).split(" "), fontname="monospace", fontsize=14
         )
     else:
         ax.tick_params(axis="x", which="major", pad=4)
         ax.set_xticks([x + 0.5 for x in range(0, 7)])
         ax.set_xticklabels(
-            calendar.weekheader(width=1).split(" "), fontname="monospace"
+            calendar.weekheader(width=1).split(" "), fontname="monospace", fontsize=14
         )
         ax.xaxis.tick_top()
 
@@ -169,7 +175,7 @@ def add_year_label(ax, dates, flip):
             ax.annotate(
                 year,
                 (loc / year_grid.shape[1], 1),
-                (0, 10),
+                (0, 12),
                 xycoords="axes fraction",
                 textcoords="offset points",
                 fontname="monospace",
