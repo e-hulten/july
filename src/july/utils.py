@@ -1,51 +1,67 @@
 import calendar
+import datetime
 from datetime import datetime as dt
-from datetime import date, datetime, timedelta
-from typing import Union, List, Any, Tuple
+from datetime import timedelta
+from typing import Union, List, Any, Tuple, Optional
 
 
-def date_range(start_date: Union[str, date], end_date: Union[str, date]) -> List[date]:
-    if not isinstance(start_date, date):
-        start_date = dt.strptime(start_date, "%Y-%m-%d")
-    if not isinstance(end_date, date):
-        end_date = dt.strptime(end_date, "%Y-%m-%d")
+def date_converter(date: Union[str, datetime.date, datetime.datetime]) -> datetime.date:
+    if isinstance(date, str):
+        return dt.strptime(date, "%Y-%m-%d").date()
+    elif isinstance(date, datetime.datetime):
+        return date.date()
+    elif isinstance(date, datetime.date):
+        # Check this last, as isinstance(<datetime object>, datetime.date) is True.
+        return date
+    else:
+        raise ValueError(
+            "Expected 'date' to be type: [str, datetime.date, datetime.datetime]. "
+            f"Got: {type(date)}."
+        )
 
+
+def date_range(
+    start_date: Union[str, datetime.date], end_date: Union[str, datetime.date]
+) -> List[datetime.date]:
+    start_date = date_converter(start_date)
+    end_date = date_converter(end_date)
     rng_diff = end_date - start_date
     return [start_date + timedelta(days=x) for x in range(0, rng_diff.days + 1)]
 
 
 def preprocess_inputs(
-    dates: List[Union[date, str]], data: List[Any]
-) -> Tuple[List[date], List[Union[int, Any]]]:
-    # Convert strings to datetime.
-    dates = [dt.strptime(d, "%Y-%m-%d") if isinstance(d, str) else d for d in dates]
-    # Strip datetimes to date.
-    dates = [d.date() if isinstance(d, datetime) else d for d in dates]
+    dates: List[Union[datetime.date, str]], data: List[Any]
+) -> Tuple[List[datetime.date], List[Union[int, Any]]]:
+    # Convert any strings to datetime.
+    dates = [
+        dt.strptime(d, "%Y-%m-%d").date() if isinstance(d, str) else d for d in dates
+    ]
+    # Strip any datetimes to date.
+    dates = [d.date() if isinstance(d, datetime.datetime) else d for d in dates]
     # Sort dates and values by dates.
     sorted_by_date = sorted([*zip(dates, data)], key=lambda x: x[0])
     # Dict mapping date to value.
     data_dict = dict(sorted_by_date)
     # Fill in date range if not complete.
-    dates = date_range(dates[0], dates[-1])
+    dates = date_range(list(data_dict.keys())[0], list(data_dict.keys())[-1])
     # Fill in zero for added dates.
     data = [data_dict.get(date, 0) for date in dates]
 
     return dates, data
 
 
-def preprocess_month(dates, data, month=None):
+def preprocess_month(
+    dates: List[datetime.date], data: List[Any], month: Optional[int] = None
+) -> Tuple[List[datetime.date], List[Union[int, Any]]]:
     # Set month for filtering
     month = month or dates[0].month
-    # Strip datetimes to date.
-    dates = [d.date() if isinstance(d, datetime) else d for d in dates]
-
     # Sort dates and values by date.
     sorted_by_date = sorted([*zip(dates, data)], key=lambda x: x[0])
 
     if len(set([d.year for d in dates if d.month == month])) != 1:
         raise ValueError(
             f"More than one year with month {month} in input 'dates'. "
-            "Month is not uniquely defined."
+            f"Month '{month}' is not uniquely defined."
         )
 
     # Filter relevant month.
@@ -59,8 +75,8 @@ def preprocess_month(dates, data, month=None):
 
     # Fill in date range if range is not complete.
     if len(data_dict) != last_day:
-        first_date = date(year, month, 1)
-        last_date = date(year, month, last_day)
+        first_date = datetime.date(year, month, 1)
+        last_date = datetime.date(year, month, last_day)
         dates = date_range(first_date, last_date)
         # Fill in zero for added dates.
         data = [data_dict.get(date, 0) for date in dates]
