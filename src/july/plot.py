@@ -51,10 +51,13 @@ def month_plot(
     dates: List[Union[str, date, datetime]],
     data: List[Any],
     flip: bool = False,
+    cmap: str = "Greens",
     date_label: bool = False,
     weeknum_label: bool = True,
     cal_mode: bool = False,
     month: Optional[int] = None,
+    cmin: Optional[int] = None,
+    cmax: Optional[int] = None,
     ax: Optional[Axes] = None,
 ):
     dates, data = preprocess_inputs(dates, data)
@@ -74,8 +77,11 @@ def month_plot(
         cal=month_grid,
         dates=dates,
         flip=flip,
+        cmap=cmap,
         year_label=False,
         month_label=False,
+        cmin=cmin,
+        cmax=cmax,
         ax=ax,
     )
 
