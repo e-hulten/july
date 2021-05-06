@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 from july.colormaps import cmaps_dict
 from matplotlib.pyplot import Axes
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+from matplotlib.ticker import ScalarFormatter
 from numpy.typing import ArrayLike
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Union
 from datetime import date
 
 
@@ -49,9 +50,11 @@ def cal_heatmap(
     year_label: bool = True,
     month_grid: bool = False,
     colorbar: bool = False,
+    frame_on: bool = False,
     title: Optional[str] = None,
     cmin: Optional[int] = None,
     cmax: Optional[int] = None,
+    cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
 ):
     if not ax:
@@ -101,12 +104,15 @@ def cal_heatmap(
                 bbox.height,
             ]
         )
-        cbar = plt.colorbar(pc, cax=cax)
+        cbar_label_format = cbar_label_format or ScalarFormatter()
+        cbar = plt.colorbar(pc, cax=cax, format=cbar_label_format)
         cbar.ax.tick_params(size=0)
+        plt.setp(cbar.ax.yaxis.get_ticklabels(), fontname="monospace")
     if title:
         ax.set_title(title, fontname="monospace", fontsize=18, pad=28)
 
     ax.tick_params(axis="both", which="both", length=0)
+    ax.set_frame_on(frame_on)
     return ax
 
 
@@ -256,13 +262,26 @@ def add_month_grid(ax, dates, month_grid, flip):
     months = set([d.month for d in dates])
     for month in months:
         coords = get_month_outline(dates, month_grid, flip=flip, month=month)
-        ax.plot(coords[:, 0], coords[:, 1], color="black", linewidth=2)
+        ax.plot(coords[:, 0], coords[:, 1], color="black", linewidth=1)
 
     # Pad axes so plotted line appears uniform also along edges.
-    ax.set_xlim(ax.get_xlim()[0] - 0.03, ax.get_xlim()[1] + 0.05)
-    ax.set_ylim(ax.get_ylim()[0] + 0.04, ax.get_ylim()[1] - 0.03)
-    f = ax.get_figure()
+    ax.set_xlim(ax.get_xlim()[0] - 0.1, ax.get_xlim()[1] + 0.1)
+    ax.set_ylim(ax.get_ylim()[0] + 0.1, ax.get_ylim()[1] - 0.1)
+
+    fig = ax.get_figure()
     # Set frame in facecolor instead of turning off frame to keep cbar alignment.
     for pos in ["top", "bottom", "right", "left"]:
-        ax.spines[pos].set_edgecolor(f.get_facecolor())
+        ax.spines[pos].set_edgecolor(fig.get_facecolor())
     return ax
+
+
+def get_calendar_title(years: List[int]):
+    if len(years) == 1:
+        return f"Calendar {years[0]}"
+    elif len(years) == 2:
+        return f"Calendar {years[0]} and {years[1]}"
+    elif len(years) > 2:
+        word_str = "Calendar "
+        for year in years[:-1]:
+            word_str += f"{year}, "
+        return word_str + f", and {years[-1]}"
