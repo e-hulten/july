@@ -30,9 +30,16 @@ def date_range(
 
 
 def preprocess_inputs(
-    dates: List[Union[datetime.date, str]], data: List[Any]
-) -> Tuple[List[datetime.date], List[Union[int, Any]]]:
-    # Convert any strings to datetime.
+    dates: List[Union[datetime.date, datetime.datetime, str]], data: List[Any]
+) -> Tuple[List[datetime.date], List[Any]]:
+    if not all(isinstance(x, (datetime.date, datetime.datetime, str)) for x in dates):
+        raise TypeError(
+            "All elements in dates must be one of types: "
+            "[datetime.date, datetme.datetime, str]. "
+            f"Got: {set([type(x) for x in dates])}."
+        )
+
+    # Convert any strings to datetime
     dates = [
         dt.strptime(d, "%Y-%m-%d").date() if isinstance(d, str) else d for d in dates
     ]
@@ -43,11 +50,13 @@ def preprocess_inputs(
     # Dict mapping date to value.
     data_dict = dict(sorted_by_date)
     # Fill in date range if not complete.
-    dates = date_range(list(data_dict.keys())[0], list(data_dict.keys())[-1])
+    dates_preprocessed = date_range(
+        list(data_dict.keys())[0], list(data_dict.keys())[-1]
+    )  # type: List[datetime.date]
     # Fill in zero for added dates.
-    data = [data_dict.get(date, 0) for date in dates]
+    data_preprocessed = [data_dict.get(date, 0) for date in dates]
 
-    return dates, data
+    return dates_preprocessed, data_preprocessed
 
 
 def preprocess_month(

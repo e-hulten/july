@@ -5,14 +5,13 @@ from july.colormaps import cmaps_dict
 from matplotlib.pyplot import Axes
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from matplotlib.ticker import ScalarFormatter
-from numpy.typing import ArrayLike
 from typing import List, Any, Optional, Union
 from datetime import date
 
 
 def date_grid(
     dates: List[date], data: List[Any], flip: bool, dtype: str = "float64"
-) -> ArrayLike:
+) -> np.ndarray:
     # Array with columns (iso year, iso week number, iso weekday).
     iso_dates = np.array([day.isocalendar() for day in dates])
     # Unique weeks, as defined by the tuple (iso year, iso week).
@@ -39,7 +38,7 @@ def date_grid(
 
 
 def cal_heatmap(
-    cal: ArrayLike,
+    cal: np.ndarray,
     dates: List[date],
     flip: bool,
     cmap: Union[str, LinearSegmentedColormap, ListedColormap] = "Greens",
