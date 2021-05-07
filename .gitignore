@@ -5,3 +5,4 @@ build
 dist
 *egg-info
 data
+.mypy_cache
