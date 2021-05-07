@@ -33,11 +33,11 @@ def heatmap(
     cmax: Optional[int] = None,
     ax: Optional[Axes] = None,
 ):
-    dates, data = preprocess_inputs(dates, data)
-    cal = date_grid(dates, data, flip)
+    dates_clean, data_clean = preprocess_inputs(dates, data)
+    cal = date_grid(dates_clean, data_clean, flip)
     ax = cal_heatmap(
         cal=cal,
-        dates=dates,
+        dates=dates_clean,
         flip=flip,
         cmap=cmap,
         value_label=value_label,
@@ -72,12 +72,16 @@ def month_plot(
     cmax: Optional[int] = None,
     ax: Optional[Axes] = None,
 ):
-    dates, data = preprocess_inputs(dates, data)
-    month = month or dates[0].month
-    dates, data = preprocess_month(dates, data, month=month)
-    month_grid = date_grid(dates, data, flip=flip)
-    weeknum_grid = date_grid(dates, [d.isocalendar()[1] for d in dates], flip=flip)
-    weeknum_labels = [int(x) for x in np.unique(weeknum_grid) if np.isfinite(x)]
+    dates_clean, data_clean = preprocess_inputs(dates, data)
+    month = month or dates_clean[0].month
+    dates_mon, data_mon = preprocess_month(dates_clean, data_clean, month=month)
+    month_grid = date_grid(dates_mon, data_mon, flip=flip)
+    weeknum_grid = date_grid(
+        dates_mon, [d.isocalendar()[1] for d in dates_mon], flip=flip
+    )
+    weeknum_labels: List[Any] = [
+        int(x) for x in np.unique(weeknum_grid) if np.isfinite(x)
+    ]
 
     if cal_mode:
         # Pad all grids to have six rows so they align when plotted side by side.
@@ -87,7 +91,7 @@ def month_plot(
 
     ax = cal_heatmap(
         cal=month_grid,
-        dates=dates,
+        dates=dates_mon,
         flip=flip,
         cmap=cmap,
         value_label=value_label,
@@ -100,7 +104,7 @@ def month_plot(
     )
 
     if date_label:
-        add_date_label(ax, dates, flip)
+        add_date_label(ax, dates_mon, flip)
 
     ax.tick_params(axis="y", pad=8)
 
@@ -112,7 +116,7 @@ def month_plot(
             ax.set_yticks([i + 0.5 for i in range(month_grid.shape[0])])
             ax.set_yticklabels(weeknum_labels, fontname="monospace", fontsize=14)
 
-    outline_coords = get_month_outline(dates, month_grid, flip, month)
+    outline_coords = get_month_outline(dates_mon, month_grid, flip, month)
     ax.plot(outline_coords[:, 0], outline_coords[:, 1], color="black", linewidth=2)
     ax.set_xlim(ax.get_xlim()[0] - 0.1, ax.get_xlim()[1] + 0.1)
     ax.set_ylim(ax.get_ylim()[0] + 0.1, ax.get_ylim()[1] - 0.1)
@@ -131,25 +135,27 @@ def calendar_plot(
     value_label: bool = False,
     title: bool = True,
     ncols: int = 4,
-    figsize: Optional[Tuple[int]] = None,
+    figsize: Optional[Tuple[int, int]] = None,
 ):
-    dates, data = preprocess_inputs(dates, data)
+    dates_clean, data_clean = preprocess_inputs(dates, data)
     # Get unique years in input dates.
-    years = sorted(set([day.year for day in dates]))
+    years = sorted(set([day.year for day in dates_clean]))
     # Get unique months (YYYY-MM) in input dates.
-    year_months = sorted(set([day.strftime("%Y-%m") for day in dates]))
+    year_months = sorted(set([day.strftime("%Y-%m") for day in dates_clean]))
 
-    nrows = np.ceil(len(year_months) / ncols).astype(int)
+    nrows = int(np.ceil(len(year_months) / ncols))
     figsize = figsize or (5 * ncols, 5 * nrows)
     fig, axes = plt.subplots(nrows, ncols, figsize=figsize, dpi=100)
 
     for i, year_month in enumerate(year_months):
-        month = [day for day in dates if day.strftime("%Y-%m") == year_month]
+        month = [day for day in dates_clean if day.strftime("%Y-%m") == year_month]
         vals = [
-            val for day, val in zip(dates, data) if day.strftime("%Y-%m") == year_month
+            val
+            for day, val in zip(dates_clean, data_clean)
+            if day.strftime("%Y-%m") == year_month
         ]
         month_plot(
-            month,
+            month,  # type: ignore
             vals,
             cmap=cmap,
             value_label=value_label,
