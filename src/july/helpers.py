@@ -10,7 +10,7 @@ from datetime import date
 
 
 def date_grid(
-    dates: List[date], data: List[Any], flip: bool, dtype: str = "float64"
+    dates: List[date], data: List[Any], horizontal: bool, dtype: str = "float64"
 ) -> np.ndarray:
     # Array with columns (iso year, iso week number, iso weekday).
     iso_dates = np.array([day.isocalendar() for day in dates])
@@ -31,7 +31,7 @@ def date_grid(
     grid = np.nan * grid if dtype == "float64" else grid
     grid[week_coords, day_coords] = data
 
-    if flip:
+    if horizontal:
         return grid.T
 
     return grid
@@ -40,7 +40,7 @@ def date_grid(
 def cal_heatmap(
     cal: np.ndarray,
     dates: List[date],
-    flip: bool,
+    horizontal: bool,
     cmap: Union[str, LinearSegmentedColormap, ListedColormap] = "Greens",
     value_label: bool = False,
     date_label: bool = False,
@@ -50,6 +50,7 @@ def cal_heatmap(
     month_grid: bool = False,
     colorbar: bool = False,
     frame_on: bool = False,
+    value_format: str = "int",
     title: Optional[str] = None,
     cmin: Optional[int] = None,
     cmax: Optional[int] = None,
@@ -57,7 +58,7 @@ def cal_heatmap(
     ax: Optional[Axes] = None,
 ):
     if not ax:
-        figsize = (10, 5) if flip else (5, 10)
+        figsize = (12, 5) if horizontal else (5, 12)
         fig, ax = plt.subplots(figsize=figsize, dpi=100)
     else:
         fig = ax.get_figure()
@@ -65,7 +66,12 @@ def cal_heatmap(
     if isinstance(cmap, str):
         cmap = cmaps_dict[cmap]
 
-    ax.set_facecolor("white")
+    if value_label and date_label:
+        raise ValueError(
+            "Maximum one of 'value_label' and 'date_label' can be "
+            f"set as 'True'. Got: 'value_label'={value_label} and"
+            f"'date_label'={date_label}."
+        )
 
     pc = ax.pcolormesh(cal, edgecolors=ax.get_facecolor(), linewidth=0.25, cmap=cmap)
     pc.set_clim(cmin or np.nanmin(cal), cmax or np.nanmax(cal))
@@ -74,76 +80,73 @@ def cal_heatmap(
     bbox = ax.get_position()
 
     if value_label:
-        for (i, j), z in np.ndenumerate(cal):
-            if np.isfinite(z):
-                # Add option to add value label as int.
-                ax.text(j + 0.5, i + 0.5, f"{z:0.1f}", ha="center", va="center")
+        add_value_label(ax, cal, value_format)
     if date_label:
-        add_date_label(ax, dates, flip)
+        add_date_label(ax, dates, horizontal)
     else:
         ax.set_xticklabels("")
     if weekday_label:
-        add_weekday_label(ax, flip)
+        add_weekday_label(ax, horizontal)
     if month_label:
-        add_month_label(ax, dates, flip)
+        add_month_label(ax, dates, horizontal)
     if year_label:
-        add_year_label(ax, dates, flip)
+        add_year_label(ax, dates, horizontal)
     if month_grid:
-        add_month_grid(ax, dates, cal, flip)
+        add_month_grid(ax, dates, cal, horizontal)
     if colorbar:
-        adj_bbox = ax.get_position()
-        height_diff = adj_bbox.height - bbox.height
-        # Specify location and dimensions: [left, bottom, width, height].
-        # This part is still not perfect when month_grid is True.
-        cax = fig.add_axes(
-            [
-                bbox.x1 + 0.015,
-                adj_bbox.y0 + height_diff / 2,
-                0.015,
-                bbox.height,
-            ]
-        )
-        cbar_label_format = cbar_label_format or ScalarFormatter()
-        cbar = plt.colorbar(pc, cax=cax, format=cbar_label_format)
-        cbar.ax.tick_params(size=0)
-        plt.setp(cbar.ax.yaxis.get_ticklabels(), fontname="monospace")
+        add_colorbar(pc, fig, ax, bbox, cbar_label_format)
     if title:
-        ax.set_title(title, fontname="monospace", fontsize=18, pad=28)
+        ax.set_title(title)
 
-    ax.tick_params(axis="both", which="both", length=0)
     ax.set_frame_on(frame_on)
     return ax
 
 
-def add_date_label(ax, dates: List[date], flip: bool) -> None:
+def add_value_label(ax, cal, value_format):
+    if value_format == "int":
+        val_format = "{:0.0f}"
+    elif value_format == "decimal":
+        val_format = "{:0.1f}"
+    else:
+        raise ValueError(
+            "Argument 'value_format' must be equal to either "
+            f"'int' or 'float'. Got: {value_format}."
+        )
+
+    for (i, j), z in np.ndenumerate(cal):
+        if np.isfinite(z):
+            ax.text(j + 0.5, i + 0.5, val_format.format(z), ha="center", va="center")
+
+
+def add_date_label(ax, dates: List[date], horizontal: bool) -> None:
     days = [day.day for day in dates]
-    day_grid = date_grid(dates, days, flip)
+    day_grid = date_grid(dates, days, horizontal)
 
     for (i, j), z in np.ndenumerate(day_grid):
         if np.isfinite(z):
             ax.text(j + 0.5, i + 0.5, int(z), ha="center", va="center")
 
 
-def add_weekday_label(ax, flip: bool) -> None:
-    if flip:
+def add_weekday_label(ax, horizontal: bool) -> None:
+    if horizontal:
         ax.tick_params(axis="y", which="major", pad=8)
         ax.set_yticks([x + 0.5 for x in range(0, 7)])
         ax.set_yticklabels(
-            calendar.weekheader(width=1).split(" "), fontname="monospace", fontsize=14
+            calendar.weekheader(width=1).split(" "),
         )
     else:
         ax.tick_params(axis="x", which="major", pad=4)
         ax.set_xticks([x + 0.5 for x in range(0, 7)])
         ax.set_xticklabels(
-            calendar.weekheader(width=1).split(" "), fontname="monospace", fontsize=14
+            calendar.weekheader(width=1).split(" "),
         )
         ax.xaxis.tick_top()
 
 
-def add_month_label(ax, dates: List[date], flip: bool) -> None:
+def add_month_label(ax, dates: List[date], horizontal: bool) -> None:
     month_years = [(day.year, day.month) for day in dates]
     month_years_str = list(map(str, month_years))
-    month_year_grid = date_grid(dates, month_years_str, flip, dtype="object")
+    month_year_grid = date_grid(dates, month_years_str, horizontal, dtype="object")
 
     unique_month_years = sorted(set(month_years))
 
@@ -152,35 +155,33 @@ def add_month_label(ax, dates: List[date], flip: bool) -> None:
         # Get 'avg' x, y coordinates of elements in grid equal to month_year.
         yy, xx = np.nonzero(month_year_grid == str(month))
         month_locs[month] = (
-            xx.max() + 1 + xx.min() if flip else yy.max() + 1 + yy.min()
+            xx.max() + 1 + xx.min() if horizontal else yy.max() + 1 + yy.min()
         ) / 2
 
     # Get month label for each unique month_year.
     month_labels = [calendar.month_abbr[x[1]] for x in month_locs.keys()]
 
-    if flip:
+    if horizontal:
         ax.set_xticks([*month_locs.values()])
-        ax.set_xticklabels(month_labels, fontsize=14, fontname="monospace", ha="center")
+        ax.set_xticklabels(month_labels, ha="center")
     else:
         ax.set_yticks([*month_locs.values()])
-        ax.set_yticklabels(
-            month_labels, fontsize=14, fontname="monospace", rotation=90, va="center"
-        )
+        ax.set_yticklabels(month_labels, rotation=90, va="center")
 
 
-def add_year_label(ax, dates, flip):
+def add_year_label(ax, dates, horizontal):
     years = [day.year for day in dates]
-    year_grid = date_grid(dates, years, flip)
+    year_grid = date_grid(dates, years, horizontal)
     unique_years = sorted(set(years))
 
     year_locs = {}
     for year in unique_years:
         yy, xx = np.nonzero(year_grid == year)
         year_locs[year] = (
-            xx.max() + 1 + xx.min() if flip else yy.max() + 1 + yy.min()
+            xx.max() + 1 + xx.min() if horizontal else yy.max() + 1 + yy.min()
         ) / 2
 
-    if flip:
+    if horizontal:
         for year, loc in year_locs.items():
             ax.annotate(
                 year,
@@ -188,8 +189,7 @@ def add_year_label(ax, dates, flip):
                 (0, 12),
                 xycoords="axes fraction",
                 textcoords="offset points",
-                fontname="monospace",
-                fontsize=16,
+                fontsize="large",
                 va="center",
                 ha="center",
             )
@@ -201,17 +201,33 @@ def add_year_label(ax, dates, flip):
                 (-40, 0),
                 xycoords="axes fraction",
                 textcoords="offset points",
+                fontsize="large",
                 rotation=90,
-                fontname="monospace",
-                fontsize=16,
                 va="center",
             )
 
 
-def get_month_outline(dates, month_grid, flip, month):
+def add_colorbar(pc, fig, ax, bbox, cbar_label_format):
+    adj_bbox = ax.get_position()
+    height_diff = adj_bbox.height - bbox.height
+    # Specify location and dimensions: [left, bottom, width, height].
+    # This part is still not perfect when month_grid is True.
+    cax = fig.add_axes(
+        [
+            bbox.x1 + 0.015,
+            adj_bbox.y0 + height_diff / 2,
+            0.015,
+            bbox.height,
+        ]
+    )
+    cbar_label_format = cbar_label_format or ScalarFormatter()
+    plt.colorbar(pc, cax=cax, format=cbar_label_format)
+
+
+def get_month_outline(dates, month_grid, horizontal, month):
     # This code is so ugly I'm amazed that it works.
-    day_grid = date_grid(dates, dates, flip=False, dtype="object")
-    if flip:
+    day_grid = date_grid(dates, dates, horizontal=False, dtype="object")
+    if horizontal:
         month_grid = month_grid.T
 
     nrows, ncols = month_grid.shape
@@ -254,13 +270,15 @@ def get_month_outline(dates, month_grid, flip, month):
         ]
     )
 
-    return coords[:, [1, 0]] if flip else coords
+    return coords[:, [1, 0]] if horizontal else coords
 
 
-def add_month_grid(ax, dates, month_grid, flip):
+def add_month_grid(ax, dates, month_grid, horizontal):
     months = set([d.month for d in dates])
     for month in months:
-        coords = get_month_outline(dates, month_grid, flip=flip, month=month)
+        coords = get_month_outline(
+            dates, month_grid, horizontal=horizontal, month=month
+        )
         ax.plot(coords[:, 0], coords[:, 1], color="black", linewidth=1)
 
     # Pad axes so plotted line appears uniform also along edges.
