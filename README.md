@@ -29,12 +29,12 @@ data = np.random.randint(0, 14, len(dates))
 # GitHub Activity like plot (for someone with consistently random work patterns).
 july.heatmap(dates, data, title='Github Activity', cmap="github")
 ```
-![GitHub heatmap](examples/heatmap_github.jpg)
+![GitHub heatmap](https://github.com/e-hulten/july/blob/master/examples/heatmap_github.jpg?raw=true)
 ```
 # Here, 'osl_df' is a pandas df. 
 july.heatmap(osl_df.date, osl_df.temp, cmap="golden", colorbar=True, title="Average temperatures: Oslo , Norway")
 ```
-![Golden heatmap](examples/pandas_oslo_temperature_plot.jpg)
+![Golden heatmap](https://github.com/e-hulten/july/blob/master/examples/pandas_oslo_temperature_plot.jpg?raw=true)
 ```
 # More exhaustive example using useless, but pretty colours.
 july.heatmap(dates=dates, 
@@ -54,7 +54,7 @@ july.heatmap(dates=dates,
              titlesize=14,
              dpi=100)
 ```
-![Pastel heatmap](examples/heatmap_pastel.jpg)
+![Pastel heatmap](https://github.com/e-hulten/july/blob/master/examples/heatmap_pastel.jpg?raw=true)
 
 ```
 # Month plot with dates.
@@ -62,12 +62,12 @@ july.month_plot(dates, data, month=5, date_label=True, ax=axes[0])
 # Month plot with values.
 july.month_plot(dates, data, month=5, value_label=True, ax=axes[1])
 ```
-![Month plot](examples/month_plot.jpg)
+![Month plot](https://github.com/e-hulten/july/blob/master/examples/month_plot.jpg?raw=true)
 ```
 # Calendar plot. 
 july.calendar_plot(dates, data)
 ```
-![Calendar plot](examples/calendar_plot.jpg)
+![Calendar plot](https://github.com/e-hulten/july/blob/master/examples/calendar_plot.jpg?raw=true)
 
 
 ### Why "July"?
