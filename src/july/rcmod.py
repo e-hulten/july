@@ -6,6 +6,9 @@ class ConfigDict(dict):
     """Dictionary that raises KeyError when trying to create new keys."""
 
     def __setitem__(self, key, val):
+        """Raises:
+        KeyError: If 'key' is not an existing key in the dictionary.
+        """
         if key not in self.keys():
             raise KeyError(
                 f"Key '{key}' is not a valid key. " f"Valid keys: {[*self.keys()]}."
@@ -31,6 +34,7 @@ def update_rcparams(
     dpi=100,
     rc_params_dict=None,
 ):
+    """Wrapper around mpl.rcParams dict to easily set some key settings."""
     rc_params_dict = rc_params_dict or {}
     rcmod = ConfigDict(mpl.rcParams)
     rcmod["font.family"] = fontfamily
