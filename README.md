@@ -3,12 +3,12 @@
 A small library for creating beautiful heatmaps of daily data. 
 
 ### Features
-- Get rid of the overhead and matplotlib tweaking every time you want to plot data in calendar format.
-- Generate GitHub activity overview-like plots of your daily data.
-- Plot daily data in calendar format (month or year).
+- Get rid of the eternal matplotlib tweaking every time you want to plot data in proper calendar format.
+- Generate GitHub activity overview-like heatmaps of your daily data.
+- Plot daily data in calendar format, either month or year.
 - Automatic handling of missing dates in input date range.
 - `July` is not pandas centric. In fact, it doesn't use pandas at all, nor does it require you to. Only numpy arrays and native Python data structures are used internally.
-- Though pd.DateTimeIndex and pd.Timestamp are both accepted as the `dates` input. They are both subclassing `datetime`, and will be stripped down to `date`.
+- Accepted date formats: `datetime.datetime`, `datetime.date`, `str`, `pd.DatetimeIndex`
 
 
 ### Install
@@ -30,56 +30,57 @@ data = np.random.randint(0, 14, len(dates))
 # GitHub Activity like plot (for someone with consistently random work patterns).
 july.heatmap(dates, data, title='Github Activity', cmap="github")
 ```
-![July](examples/heatmap_github.jpg)
+![GitHub heatmap](examples/heatmap_github.jpg)
 ```
-# Useless, but pretty colours.
-july.heatmap(dates=dates, data=data, month_grid=True, cmap='Pastel1')
+# Here, 'osl_df' is a pandas df. 
+july.heatmap(osl_df.date, osl_df.temp, cmap="golden", colorbar=True, title="Average temperatures: Oslo , Norway")
 ```
-![July](examples/heatmap_pastel.jpg)
+![Golden heatmap](examples/pandas_oslo_temperature_plot.jpg)
 ```
-import pandas as pd
-# july also works with pandas data frames and datetime index
-osl_df = pd.read_csv("oslo.csv")  # Elements in 'date' column has dtype str.
-nyc_df = pd.read_csv("new_york.csv").set_index('date')
-nyc_df.index = pd.to_datetime(nyc_df.index)  # Index is DatetimeIndex.
+# More exhaustive example using useless, but pretty colours.
+july.heatmap(dates=dates, 
+             data=data, 
+             cmap='Pastel1',
+             month_grid=True, 
+             horizontal=True,
+             value_label=False,
+             date_label=False,
+             weekday_label=True,
+             month_label=True, 
+             year_label=True,
+             colorbar=False,
+             fontfamily="sans-serif",
+             fontsize=10,
+             title=None,
+             titlesize=14,
+             dpi=100)
+```
+![Pastel heatmap](examples/heatmap_pastel.jpg)
 
-fig, axes = plt.subplots(2,1, figsize=(16,7))
-july.heatmap(osl_df.date, osl_df.temp, cmap="golden", cmin=-10, cmax=30, ax=axes[0], colorbar=True, title="Oslo")
-july.heatmap(nyc_df.index, nyc_df.temp, cmap="golden", cmin=-10, cmax=30, ax=axes[1], colorbar=True, title="New York City")
-plt.suptitle("Daily Average Temperatures", fontsize="x-large",y=0.96)
-plt.savefig("pandas_temperature_plots.jpg", bbox_inches="tight")
 ```
-![July](examples/pandas_temperature_plots.jpg)
-
+# Month plot with dates.
+july.month_plot(dates, github_data, month=5, date_label=True, ax=axes[0])
+# Month plot with values.
+july.month_plot(dates, github_data, month=5, value_label=True, ax=axes[1])
+```
+![Month plot](examples/month_plot.jpg)
 ```
 # Calendar plot. 
 july.calendar_plot(dates, data)
 ```
-![July](examples/calendar_plot.jpg)
-```
-# Month plot with dates.
-july.month_plot(dates, data, month=5, date_label=True)
-```
-![July](examples/month_plot_date_label.jpg)
-```
-# Month plot with values.
-july.month_plot(dates, data, month=5, value_label=True)
-```
-![July](examples/month_plot_value_label.jpg)
+![Calendar plot](examples/calendar_plot.jpg)
+
 
 ### Why "July"?
-The obvious names like `calplot` and `calendarplot` were all already taken by similar packages, and thus, the quest for a new name began. 
+**Main reason:** All the obvious names like `calplot`, `calmap`, and `calendarplot` were all already taken by similar packages. This had me looking for a new name that wouldn't get easily mixed up with the other packages.
 
-The reasoning was roughly as follows:
-- **Q**: What is this package doing?
-- **A**: It creates heatmaps of daily data, grouped by month.
-- **Q**: Heat... month... what is the hottest month?
-- **A**: :sparkles: :sparkles: :sparkles: July :sparkles: :sparkles: :sparkles:  
+The reasoning was roughly as follows: 
+ - `Heatmap` + `month` → `Hot month` → `July` :sparkles:
 
-Also, as a summer loving person stuck in Norway, July is my favourite month by a light year.
+Also, as a summer loving person stuck in the Northern hemisphere, July is my favourite month by a light year.
 
 ### TODO:
-- Add examples and example figures to README.
-- Fix slight misalignment of plot and cbar when `date_grid` and `colourbar` are used in conjunction.
+- Fix slight misalignment of plot and cbar when `date_grid` and `colorbar` are used in conjunction.
 - Document everything...
 - Add type hints. 
+- Add automatic date handling for strings of more types than just `YYYY-MM-DD`
