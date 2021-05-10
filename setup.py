@@ -11,6 +11,7 @@ setuptools.setup(
     description="A small library for creating beautiful heatmaps of daily data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    include_package_data=True,
     license="MIT",
     url="https://github.com/e-hulten/july/",
     keywords=[
