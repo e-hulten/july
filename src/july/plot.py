@@ -35,6 +35,36 @@ def heatmap(
     ax: Optional[Axes] = None,
     **kwargs
 ) -> Axes:
+    """Create heatmap of input dates and data.
+
+    Args:
+        dates: List like data structure with dates.
+        data: List like data structure with numeric data.
+        horizontal: Whether to plot heatmap horizontally. Grid shape (7, n_weeks)
+            if True, (n_weeks, 7) if False.
+        cmap: Colormap. Any matplotlib colormap works.
+        value_label: Whether to add value label inside grid.
+        date_label: Whether to add date label inside grid.
+        weekday_label: Whether to label the short axis with weekday abbreviations.
+        month_label: Whether to add month label(s) along the long axis.
+        year_label: Whether to add year label(s) along the long axis.
+        month_grid: Whether to outline each month in the grid.
+        colorbar: Whether to add colorbar.
+        frame_on: Whether to turn frame on.
+        value_format: Format of value_label: 'int' or 'decimal'. Only relevant if
+            `value_label` is True.
+        title: Title of the plot.
+        cmin: Minimum value of the colorbar. Defaults to minimum value of `data`.
+            Only relevant if `colorbar` is True.
+        cmax: Maximum value of the colorbar. Defaults to maximum value of 'data'.
+            Only relevant if 'colorbar' is True.
+        ax: Matplotlib Axes object.
+        kwargs: Parameters passed to `update_rcparams`. Figure aesthetics. Named
+            keyword arguments as defined in `update_rcparams` or a dict with any
+            rcParam as key(s).
+    Returns:
+        Matplotlib Axes object.
+    """
     update_rcparams(**kwargs)
     dates_clean, data_clean = preprocess_inputs(dates, data)
     cal = date_grid(dates_clean, data_clean, horizontal)
@@ -70,9 +100,9 @@ def month_plot(
     date_label: bool = False,
     weeknum_label: bool = True,
     month_label: bool = True,
-    cal_mode: bool = False,
-    value_format: str = "int",
     colorbar: bool = False,
+    value_format: str = "int",
+    cal_mode: bool = False,
     title: Optional[str] = None,
     month: Optional[int] = None,
     cmin: Optional[int] = None,
@@ -80,10 +110,38 @@ def month_plot(
     ax: Optional[Axes] = None,
     **kwargs
 ) -> Axes:
+    """Create calendar shaped heatmap of one month in input dates and data.
+
+    Args:
+        dates: List like data structure with dates.
+        data: List like data structure with numeric data.
+        horizontal: Whether to plot heatmap horizontally. Grid shape (7, n_weeks)
+            if True, (n_weeks, 7) if False.
+        cmap: Colormap. Any matplotlib colormap works.
+        value_label: Whether to add value label inside grid.
+        date_label: Whether to add date label inside grid.
+        weeknum_label: Whether to label the short axis with week numbers.
+        month_label: Whether to add month label(s) along the long axis.
+        colorbar: Whether to add colorbar.
+        value_format: Format of value_label: 'int' or 'decimal'. Only relevant if
+            `value_label` is True.
+        cal_mode: Whether to pad the month to be six weeks.
+        title: Title of the plot.
+        month: Which month in 'dates' to plot.
+        cmin: Minimum value of the colorbar. Defaults to minimum value of `data`.
+            Only relevant if `colorbar` is True.
+        cmax: Maximum value of the colorbar. Defaults to maximum value of 'data'.
+            Only relevant if 'colorbar' is True.
+        ax: Matplotlib Axes object.
+        kwargs: Parameters passed to `update_rcparams`. Figure aesthetics. Named
+            keyword arguments as defined in `update_rcparams` or a dict with any
+            rcParam as key(s).
+    Returns:
+        Matplotlib Axes object.
+    """
     update_rcparams(**kwargs)
-    dates_clean, data_clean = preprocess_inputs(dates, data)
-    month = month or dates_clean[0].month
-    dates_mon, data_mon = preprocess_month(dates_clean, data_clean, month=month)
+    dates_mon, data_mon = preprocess_month(dates, data, month=month)
+    month = dates_mon[0].month
     month_grid = date_grid(dates_mon, data_mon, horizontal=horizontal)
     weeknum_grid = date_grid(
         dates_mon, [d.isocalendar()[1] for d in dates_mon], horizontal=horizontal
@@ -146,12 +204,36 @@ def calendar_plot(
     cmap: Union[str, LinearSegmentedColormap, ListedColormap] = "july",
     value_label: bool = False,
     date_label: bool = False,
+    weeknum_label: bool = True,
+    month_label: bool = True,
     value_format: str = "int",
     title: bool = True,
     ncols: int = 4,
     figsize: Optional[Tuple[float, float]] = None,
     **kwargs
 ) -> Axes:
+    """Create calendar shaped heatmap of all months im input dates and data.
+
+    Args:
+        dates: List like data structure with dates.
+        data: List like data structure with numeric data.
+        cmap: Colormap. Any matplotlib colormap works.
+        value_label: Whether to add value label inside grid.
+        date_label: Whether to add date label inside grid.
+        weeknum_label: Whether to label the short axis with week numbers.
+        month_label: Whether to add month label(s) along the long axis.
+        value_format: Format of value_label: 'int' or 'decimal'. Only relevant if
+            `value_label` is True.
+        title: Title of the plot.
+        ncols: Number of columns in the calendar plot.
+        ax: Matplotlib Axes object.
+        figsize: Figure size. Defaults to sensible values determined from 'ncols'.
+        kwargs: Parameters passed to `update_rcparams`. Figure aesthetics. Named
+            keyword arguments as defined in `update_rcparams` or a dict with any
+            rcParam as key(s).
+    Returns:
+        Matplotlib Axes object.
+    """
     update_rcparams(**kwargs)
     dates_clean, data_clean = preprocess_inputs(dates, data)
     # Get unique years in input dates.
@@ -184,6 +266,8 @@ def calendar_plot(
             vals,
             cmap=cmap,
             date_label=date_label,
+            weeknum_label=weeknum_label,
+            month_label=month_label,
             value_label=value_label,
             value_format=value_format,
             ax=axes.reshape(-1)[i],
