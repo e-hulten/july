@@ -35,7 +35,7 @@ def preprocess_inputs(
     if not all(isinstance(x, (datetime.date, datetime.datetime, str)) for x in dates):
         raise TypeError(
             "All elements in dates must be one of types: "
-            "[datetime.date, datetme.datetime, str]. "
+            "[datetime.date, datetime.datetime, str]. "
             f"Got: {set([type(x) for x in dates])}."
         )
 
@@ -54,7 +54,7 @@ def preprocess_inputs(
         list(data_dict.keys())[0], list(data_dict.keys())[-1]
     )  # type: List[datetime.date]
     # Fill in zero for added dates.
-    data_preprocessed = [data_dict.get(date, 0) for date in dates]
+    data_preprocessed = [data_dict.get(date, 0) for date in dates_preprocessed]
 
     return dates_preprocessed, data_preprocessed
 
