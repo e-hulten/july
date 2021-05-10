@@ -1,4 +1,4 @@
-![July](figs/july.png)
+![July](https://github.com/e-hulten/july/blob/master/figs/july.png?raw=true)
 # July
 A small library for creating beautiful heatmaps of daily data. 
 
