@@ -5,9 +5,8 @@ A small library for creating beautiful heatmaps of daily data.
 ### Features
 - Get rid of the eternal matplotlib tweaking every time you want to plot data in proper calendar format.
 - Generate GitHub activity overview-like heatmaps of your daily data.
-- Plot daily data in calendar format, either month or year.
 - Automatic handling of missing dates in input date range.
-- `July` is not pandas centric. In fact, it doesn't use pandas at all, nor does it require you to. Only numpy arrays and native Python data structures are used internally.
+- `July` does not rely only pandas (though it accepts it). Only numpy arrays and native Python data structures are used internally.
 - Accepted date formats: `datetime.datetime`, `datetime.date`, `str`, `pd.DatetimeIndex`
 
 
@@ -59,9 +58,9 @@ july.heatmap(dates=dates,
 
 ```
 # Month plot with dates.
-july.month_plot(dates, github_data, month=5, date_label=True, ax=axes[0])
+july.month_plot(dates, data, month=5, date_label=True, ax=axes[0])
 # Month plot with values.
-july.month_plot(dates, github_data, month=5, value_label=True, ax=axes[1])
+july.month_plot(dates, data, month=5, value_label=True, ax=axes[1])
 ```
 ![Month plot](examples/month_plot.jpg)
 ```
@@ -83,4 +82,4 @@ Also, as a summer loving person stuck in the Northern hemisphere, July is my fav
 - Fix slight misalignment of plot and cbar when `date_grid` and `colorbar` are used in conjunction.
 - Document everything...
 - Add type hints. 
-- Add automatic date handling for strings of more types than just `YYYY-MM-DD`
+- Add automatic date handling for strings of more types than just `YYYY-MM-DD`.
