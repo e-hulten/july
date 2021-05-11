@@ -48,10 +48,10 @@ july.heatmap(dates=dates,
              month_label=True, 
              year_label=True,
              colorbar=False,
-             fontfamily="sans-serif",
-             fontsize=10,
+             fontfamily="monospace",
+             fontsize=12,
              title=None,
-             titlesize=14,
+             titlesize='large',
              dpi=100)
 ```
 ![Pastel heatmap](https://github.com/e-hulten/july/blob/master/examples/heatmap_pastel.jpg?raw=true)
@@ -77,6 +77,11 @@ The reasoning was roughly as follows:
  - `Heatmap` + `month` → `Hot month` → `July` :sparkles:
 
 Also, as a summer loving person stuck in the Northern hemisphere, July is my favourite month by a light year.
+
+### Release notes
+- **v0.1.0**: Working build but with minimal documentation.
+- **v0.1.1**: Fix relative image link in readme.
+- **v0.1.2**: Remove unnecessary argument from rcmod to be compatible with matplotlib versions earlier than v3.4.x.
 
 ### TODO:
 - Fix slight misalignment of plot and cbar when `date_grid` and `colorbar` are used in conjunction.
