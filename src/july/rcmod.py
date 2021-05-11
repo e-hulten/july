@@ -30,7 +30,6 @@ def update_rcparams(
     ymargin=0,
     xtickmajorsize=0,
     ytickmajorsize=0,
-    pcolormeshsnap=True,
     dpi=100,
     rc_params_dict=None,
 ):
@@ -49,7 +48,6 @@ def update_rcparams(
     rcmod["axes.ymargin"] = ymargin
     rcmod["xtick.major.size"] = xtickmajorsize
     rcmod["ytick.major.size"] = ytickmajorsize
-    rcmod["pcolormesh.snap"] = pcolormeshsnap
     rcmod["figure.dpi"] = dpi
     rcmod.update(rc_params_dict)
     with warnings.catch_warnings():
