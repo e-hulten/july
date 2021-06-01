@@ -185,6 +185,11 @@ def month_plot(
         else:
             ax.set_yticks([i + 0.5 for i in range(month_grid.shape[0])])
             ax.set_yticklabels(weeknum_labels)
+    else:
+        if horizontal:
+            ax.set_xticks([])
+        else:
+            ax.set_yticks([])
 
     outline_coords = get_month_outline(dates_mon, month_grid, horizontal, month)
     ax.plot(outline_coords[:, 0], outline_coords[:, 1], color="black", linewidth=1)
@@ -209,6 +214,8 @@ def calendar_plot(
     value_format: str = "int",
     title: bool = True,
     ncols: int = 4,
+    cmin: Optional[int] = None,
+    cmax: Optional[int] = None,
     figsize: Optional[Tuple[float, float]] = None,
     **kwargs
 ) -> Axes:
@@ -271,6 +278,8 @@ def calendar_plot(
             value_label=value_label,
             value_format=value_format,
             ax=axes.reshape(-1)[i],
+            cmin=cmin,
+            cmax=cmax,
             cal_mode=True,
         )
 
