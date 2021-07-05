@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import numpy as np
 from datetime import datetime as dt
 from datetime import timedelta
 from typing import Union, List, Any, Tuple, Optional
@@ -22,7 +23,8 @@ def date_converter(date: Union[str, datetime.date, datetime.datetime]) -> dateti
     elif isinstance(date, datetime.datetime):
         return date.date()
     elif isinstance(date, datetime.date):
-        # Check this last, as isinstance(<datetime object>, datetime.date) is True.
+        # Check this last, as isinstance(<datetime object>, datetime.date)
+        # is True as well.
         return date
     else:
         raise TypeError(
@@ -65,15 +67,15 @@ def preprocess_inputs(
     """
     # Convert all dates to datetime.date.
     dates = [date_converter(date) for date in dates]
-    # Sort dates and values by dates.
+    # Sort date and value pairs by date.
     sorted_by_date = sorted([*zip(dates, data)], key=lambda x: x[0])
-    # Dict mapping date to value.
+    # Crate dict mapping date to value.
     data_dict = dict(sorted_by_date)
     # Fill in date range if not complete.
     dates_preprocessed = date_range(
         list(data_dict.keys())[0], list(data_dict.keys())[-1]
     )  # type: List[datetime.date]
-    # Fill in zero for added dates.
+    # Fill in zero for missing values for the added dates.
     data_preprocessed = [data_dict.get(date, 0) for date in dates_preprocessed]
 
     return dates_preprocessed, data_preprocessed
@@ -83,6 +85,7 @@ def preprocess_month(
     dates: List[Union[str, datetime.date, datetime.datetime]],
     data: List[Any],
     month: Optional[int] = None,
+    year: Optional[int] = None,
 ) -> Tuple[List[datetime.date], List[Any]]:
     """Extract and preprocess one month of data from input dates and data.
 
@@ -91,29 +94,43 @@ def preprocess_month(
         data: List of corresponding values.
         month: Which month in the input dates to preprocess. Defaults to the
             month of the first element in dates.
+        year: Which year in the input dates to preprocess. Only required if
+            'dates' contains multiple years.
     Returns:
         dates: Preprocessed and filtered dates for the desired month.
         data: Data for the desired month.
 
     Raises:
-        ValueError: If month is not uniquely defined in input dates.
+        ValueError: If month is not present or uniquely defined.
     """
+    # Preprocess inputs.
     dates_clean, data_clean = preprocess_inputs(dates, data)
-    # Set month for filtering
-    month = month or dates_clean[0].month
     # Sort dates and values by date.
     sorted_by_date = sorted([*zip(dates_clean, data_clean)], key=lambda x: x[0])
+    # Set month for filtering.
+    month = month or dates_clean[0].month
+    # Filter relevant month and create dict mapping date to value.
+    if year:
+        data_dict = {
+            day: val
+            for day, val in sorted_by_date
+            if day.month == month and day.year == year
+        }
+    else:
+        data_dict = {day: val for day, val in sorted_by_date if day.month == month}
 
-    if len(set([d.year for d in dates_clean if d.month == month])) != 1:
+    unique_years = set([d.year for d in list(data_dict.keys()) if d.month == month])
+    if len(data_dict) == 0:
+        if year:
+            raise ValueError(f"No days in month '{month}'-'{year}' in input 'dates'.")
+        else:
+            raise ValueError(f"No days in month '{month}' in input 'dates'.")
+    elif len(unique_years) > 1:
         raise ValueError(
-            f"More than one year with month {month} in input 'dates'. "
-            f"Month '{month}' is not uniquely defined."
+            f"More than one year with month '{month}' in input 'dates'. "
+            f"Month '{month}' is not uniquely defined. Please specify 'year'."
         )
 
-    # Filter relevant month.
-    month_list = [(day, val) for day, val in sorted_by_date if day.month == month]
-    # Dict mapping date to value.
-    data_dict = dict(month_list)
     # Get the year in question.
     year = list(data_dict.keys())[0].year
     # Get last day of month.
@@ -131,3 +148,11 @@ def preprocess_month(
         data_out = list(data_dict.values())
 
     return dates_out, data_out
+
+
+def unique(arr: Union[np.ndarray, list]):
+    """Order preserving alternative to np.unique()."""
+    if isinstance(arr, np.ndarray):
+        arr = arr.flatten()
+
+    return list({i: None for i in arr}.keys())

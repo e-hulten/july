@@ -11,7 +11,7 @@ from july.helpers import (
     get_month_outline,
     get_calendar_title,
 )
-from july.utils import preprocess_inputs, preprocess_month
+from july.utils import preprocess_inputs, preprocess_month, unique
 from july.rcmod import update_rcparams
 
 
@@ -105,6 +105,7 @@ def month_plot(
     cal_mode: bool = False,
     title: Optional[str] = None,
     month: Optional[int] = None,
+    year: Optional[int] = None,
     cmin: Optional[int] = None,
     cmax: Optional[int] = None,
     ax: Optional[Axes] = None,
@@ -128,6 +129,8 @@ def month_plot(
         cal_mode: Whether to pad the month to be six weeks.
         title: Title of the plot.
         month: Which month in 'dates' to plot.
+        year: Which year in 'dates' to plot 'month' for. Only required if 'month'
+            is ambiguous.
         cmin: Minimum value of the colorbar. Defaults to minimum value of `data`.
             Only relevant if `colorbar` is True.
         cmax: Maximum value of the colorbar. Defaults to maximum value of 'data'.
@@ -140,15 +143,13 @@ def month_plot(
         Matplotlib Axes object.
     """
     update_rcparams(**kwargs)
-    dates_mon, data_mon = preprocess_month(dates, data, month=month)
+    dates_mon, data_mon = preprocess_month(dates, data, month=month, year=year)
     month = dates_mon[0].month
     month_grid = date_grid(dates_mon, data_mon, horizontal=horizontal)
     weeknum_grid = date_grid(
         dates_mon, [d.isocalendar()[1] for d in dates_mon], horizontal=horizontal
     )
-    weeknum_labels: List[Any] = [
-        int(x) for x in np.unique(weeknum_grid) if np.isfinite(x)
-    ]
+    weeknum_labels: List[Any] = [int(x) for x in unique(weeknum_grid) if np.isfinite(x)]
 
     if cal_mode:
         # Pad all grids to have six rows so weeks align when plotted side by side.
@@ -187,9 +188,9 @@ def month_plot(
             ax.set_yticklabels(weeknum_labels)
     else:
         if horizontal:
-            ax.set_xticks([])
+            ax.set_xticklabels([])
         else:
-            ax.set_yticks([])
+            ax.set_yticklabels([])
 
     outline_coords = get_month_outline(dates_mon, month_grid, horizontal, month)
     ax.plot(outline_coords[:, 0], outline_coords[:, 1], color="black", linewidth=1)
@@ -214,8 +215,6 @@ def calendar_plot(
     value_format: str = "int",
     title: bool = True,
     ncols: int = 4,
-    cmin: Optional[int] = None,
-    cmax: Optional[int] = None,
     figsize: Optional[Tuple[float, float]] = None,
     **kwargs
 ) -> Axes:
@@ -278,8 +277,6 @@ def calendar_plot(
             value_label=value_label,
             value_format=value_format,
             ax=axes.reshape(-1)[i],
-            cmin=cmin,
-            cmax=cmax,
             cal_mode=True,
         )
 
