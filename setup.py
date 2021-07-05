@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="july",
-    version="0.1.2",
+    version="0.1.3",
     author="Edvard Hultén",
     author_email="edvard.hulten@gmail.com",
-    description="A small library for creating beautiful heatmaps of daily data.",
+    description="A small library for creating pretty heatmaps of daily data.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     include_package_data=True,
@@ -21,6 +21,8 @@ setuptools.setup(
         "daily",
         "matplotlib",
         "github plot",
+        "month plot",
+        "date plot",
         "plot",
         "plotting",
     ],
