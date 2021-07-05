@@ -6,3 +6,4 @@ dist
 *egg-info
 data
 .mypy_cache
+__pycache__
