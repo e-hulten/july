@@ -1,6 +1,6 @@
 ![July](https://github.com/e-hulten/july/blob/master/figs/july.png?raw=true)
 # July
-A small library for creating beautiful heatmaps of daily data. 
+A small library for creating pretty heatmaps of daily data. 
 
 ### Features
 - Get rid of the eternal matplotlib tweaking every time you want to plot data in proper calendar format.
@@ -79,9 +79,10 @@ The reasoning was roughly as follows:
 Also, as a summer loving person stuck in the Northern hemisphere, July is my favourite month by a light year.
 
 ### Release notes
-- **v0.1.0**: Working build but with minimal documentation.
-- **v0.1.1**: Fix relative image link in readme.
-- **v0.1.2**: Remove unnecessary argument from rcmod to be compatible with matplotlib versions earlier than v3.4.x.
+- **`v0.1.0`**: Working build but with minimal documentation.
+- **`v0.1.1`**: Fix relative image link in readme.
+- **`v0.1.2`**: Remove unnecessary argument from rcmod to be compatible with matplotlib versions earlier than v3.4.x.
+- **`v0.1.3`**: Fix week number labelling bug in `month_plot()` and `calendar_plot()`
 
 ### TODO:
 - Fix slight misalignment of plot and cbar when `date_grid` and `colorbar` are used in conjunction.
