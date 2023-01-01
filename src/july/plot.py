@@ -26,12 +26,14 @@ def heatmap(
     month_label: bool = True,
     year_label: bool = True,
     month_grid: bool = False,
+    month_grid_color: str = "black",
     colorbar: bool = False,
     frame_on: bool = False,
     value_format: str = "int",
     title: Optional[str] = None,
     cmin: Optional[int] = None,
     cmax: Optional[int] = None,
+    cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
     **kwargs
 ) -> Axes:
@@ -49,6 +51,7 @@ def heatmap(
         month_label: Whether to add month label(s) along the long axis.
         year_label: Whether to add year label(s) along the long axis.
         month_grid: Whether to outline each month in the grid.
+        month_grid_color: Color to use for month grid outline.
         colorbar: Whether to add colorbar.
         frame_on: Whether to turn frame on.
         value_format: Format of value_label: 'int' or 'decimal'. Only relevant if
@@ -58,6 +61,7 @@ def heatmap(
             Only relevant if `colorbar` is True.
         cmax: Maximum value of the colorbar. Defaults to maximum value of 'data'.
             Only relevant if 'colorbar' is True.
+        cbar_label_format: Format string for colorbar labels.
         ax: Matplotlib Axes object.
         kwargs: Parameters passed to `update_rcparams`. Figure aesthetics. Named
             keyword arguments as defined in `update_rcparams` or a dict with any
@@ -79,12 +83,14 @@ def heatmap(
         month_label=month_label,
         year_label=year_label,
         month_grid=month_grid,
+        month_grid_color=month_grid_color,
         colorbar=colorbar,
         frame_on=frame_on,
         value_format=value_format,
         title=title,
         cmin=cmin,
         cmax=cmax,
+        cbar_label_format=cbar_label_format,
         ax=ax,
     )
 
@@ -108,6 +114,7 @@ def month_plot(
     year: Optional[int] = None,
     cmin: Optional[int] = None,
     cmax: Optional[int] = None,
+    cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
     **kwargs
 ) -> Axes:
@@ -135,6 +142,7 @@ def month_plot(
             Only relevant if `colorbar` is True.
         cmax: Maximum value of the colorbar. Defaults to maximum value of 'data'.
             Only relevant if 'colorbar' is True.
+        cbar_label_format: Format string for colorbar labels.
         ax: Matplotlib Axes object.
         kwargs: Parameters passed to `update_rcparams`. Figure aesthetics. Named
             keyword arguments as defined in `update_rcparams` or a dict with any
@@ -174,6 +182,7 @@ def month_plot(
         colorbar=colorbar,
         cmin=cmin,
         cmax=cmax,
+        cbar_label_format=cbar_label_format,
         ax=ax,
     )
 
