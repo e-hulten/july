@@ -58,7 +58,8 @@ def cal_heatmap(
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
     lws:Optional[float] = 0.25,
-    month_grid_linewidth:Optional[float]=1
+    month_grid_linewidth:Optional[float]=1,
+    num_var:Optional[int] = 1
 ):
     if not ax:
         figsize = (12, 5) if horizontal else (5, 12)
