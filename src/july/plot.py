@@ -212,7 +212,7 @@ def month_plot(
             ax.set_yticklabels([])
 
     outline_coords = get_month_outline(dates_mon, month_grid, horizontal, month)
-    ax.plot(outline_coords[:, 0], outline_coords[:, 1], color="black", linewidth=1)
+    ax.plot(outline_coords[:, 0], outline_coords[:, 1], color=month_grid_color, linewidth=month_grid_linewidth)
     ax.set_xlim(ax.get_xlim()[0] - 0.1, ax.get_xlim()[1] + 0.1)
     ax.set_ylim(ax.get_ylim()[0] + 0.1, ax.get_ylim()[1] - 0.1)
     if month_label:
