@@ -57,6 +57,7 @@ def cal_heatmap(
     cmax: Optional[int] = None,
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
+    lws:Optional[float] = 0.25
 ):
     if not ax:
         figsize = (12, 5) if horizontal else (5, 12)
@@ -74,7 +75,7 @@ def cal_heatmap(
             f"'date_label'={date_label}."
         )
 
-    pc = ax.pcolormesh(cal, edgecolors=ax.get_facecolor(), linewidth=0.25, cmap=cmap)
+    pc = ax.pcolormesh(cal, edgecolors=ax.get_facecolor(), linewidth=lws, cmap=cmap)
     pc.set_clim(cmin or np.nanmin(cal), cmax or np.nanmax(cal))
     ax.invert_yaxis()
     ax.set_aspect("equal")
