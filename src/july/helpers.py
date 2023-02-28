@@ -291,7 +291,8 @@ def add_month_grid(ax, dates, month_grid, horizontal, color, month_grid_linewidt
     fig = ax.get_figure()
     # Set frame in facecolor instead of turning off frame to keep cbar alignment.
     for pos in ["top", "bottom", "right", "left"]:
-        ax.spines[pos].set_edgecolor(fig.get_facecolor())
+        # ax.spines[pos].set_edgecolor(fig.get_facecolor())
+        ax.spines[pos].set_edgecolor("red")
     return ax
 
 
