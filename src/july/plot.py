@@ -119,6 +119,7 @@ def month_plot(
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
     lws: Optional[float]=0.25,
+    month_grid_color: str = "black",
     **kwargs
 ) -> Axes:
     """Create calendar shaped heatmap of one month in input dates and data.
@@ -187,7 +188,8 @@ def month_plot(
         cmax=cmax,
         cbar_label_format=cbar_label_format,
         ax=ax,
-        lws=lws
+        lws=lws,
+        month_grid_color=month_grid_color
     )
 
     ax.tick_params(axis="y", pad=8)
@@ -230,6 +232,7 @@ def calendar_plot(
     ncols: int = 4,
     figsize: Optional[Tuple[float, float]] = None,
     lws: Optional[float]=0.25,
+    month_grid_color: str = "black",
     **kwargs
 ) -> Axes:
     """Create calendar shaped heatmap of all months im input dates and data.
@@ -292,7 +295,8 @@ def calendar_plot(
             value_format=value_format,
             ax=axes.reshape(-1)[i],
             cal_mode=True,
-            lws=lws
+            lws=lws,
+            month_grid_color=month_grid_color
         )
 
     for ax in axes.reshape(-1)[len(year_months) :]:
