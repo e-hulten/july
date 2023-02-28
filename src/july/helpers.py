@@ -282,7 +282,9 @@ def add_month_grid(ax, dates, month_grid, horizontal, color, month_grid_linewidt
         coords = get_month_outline(
             dates, month_grid, horizontal=horizontal, month=month
         )
-        ax.plot(coords[:, 0], coords[:, 1], color="0.5", linewidth=0.3)
+        ax.plot(coords[:, 0], coords[:, 1], color=color, linewidth=month_grid_linewidth)
+        
+        print(color, month_grid_linewidth)
 
     # Pad axes so plotted line appears uniform also along edges.
     ax.set_xlim(ax.get_xlim()[0] - 0.1, ax.get_xlim()[1] + 0.1)
