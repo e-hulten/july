@@ -60,6 +60,7 @@ def cal_heatmap(
     lws:Optional[float] = 0.25,
     month_grid_linewidth:Optional[float]=1
 ):
+    print("stuff")
     if not ax:
         figsize = (12, 5) if horizontal else (5, 12)
         fig, ax = plt.subplots(figsize=figsize, dpi=100)
