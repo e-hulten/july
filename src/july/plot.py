@@ -35,6 +35,8 @@ def heatmap(
     cmax: Optional[int] = None,
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
+    lws: Optional[float]=0.25,
+    month_grid_linewidth: Optional[float]=1,
     **kwargs
 ) -> Axes:
     """Create heatmap of input dates and data.
@@ -92,6 +94,8 @@ def heatmap(
         cmax=cmax,
         cbar_label_format=cbar_label_format,
         ax=ax,
+        month_grid_linewidth=month_grid_linewidth,
+        lws=lws
     )
 
     return ax
@@ -109,6 +113,7 @@ def month_plot(
     colorbar: bool = False,
     value_format: str = "int",
     cal_mode: bool = False,
+    weekday_label: bool = True,
     title: Optional[str] = None,
     month: Optional[int] = None,
     year: Optional[int] = None,
@@ -116,6 +121,9 @@ def month_plot(
     cmax: Optional[int] = None,
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
+    lws: Optional[float]=0.25,
+    month_grid_color: str = "black",
+    month_grid_linewidth: Optional[float]=1,
     **kwargs
 ) -> Axes:
     """Create calendar shaped heatmap of one month in input dates and data.
@@ -176,6 +184,7 @@ def month_plot(
         value_label=value_label,
         value_format=value_format,
         date_label=date_label,
+        weekday_label=weekday_label,
         year_label=False,
         month_label=False,
         frame_on=False,
@@ -184,6 +193,9 @@ def month_plot(
         cmax=cmax,
         cbar_label_format=cbar_label_format,
         ax=ax,
+        lws=lws,
+        month_grid_color=month_grid_color,
+        month_grid_linewidth=month_grid_linewidth
     )
 
     ax.tick_params(axis="y", pad=8)
@@ -202,7 +214,7 @@ def month_plot(
             ax.set_yticklabels([])
 
     outline_coords = get_month_outline(dates_mon, month_grid, horizontal, month)
-    ax.plot(outline_coords[:, 0], outline_coords[:, 1], color="black", linewidth=1)
+    ax.plot(outline_coords[:, 0], outline_coords[:, 1], color=month_grid_color, linewidth=month_grid_linewidth)
     ax.set_xlim(ax.get_xlim()[0] - 0.1, ax.get_xlim()[1] + 0.1)
     ax.set_ylim(ax.get_ylim()[0] + 0.1, ax.get_ylim()[1] - 0.1)
     if month_label:
@@ -220,11 +232,15 @@ def calendar_plot(
     value_label: bool = False,
     date_label: bool = False,
     weeknum_label: bool = True,
+    weekday_label: bool = True,
     month_label: bool = True,
     value_format: str = "int",
     title: bool = True,
     ncols: int = 4,
     figsize: Optional[Tuple[float, float]] = None,
+    lws: Optional[float]=0.25,
+    month_grid_color: str = "black",
+    month_grid_linewidth: Optional[float]=1,
     **kwargs
 ) -> Axes:
     """Create calendar shaped heatmap of all months im input dates and data.
@@ -285,8 +301,12 @@ def calendar_plot(
             month_label=month_label,
             value_label=value_label,
             value_format=value_format,
+            weekday_label=weekday_label,
             ax=axes.reshape(-1)[i],
             cal_mode=True,
+            lws=lws,
+            month_grid_linewidth = month_grid_linewidth,
+            month_grid_color=month_grid_color
         )
 
     for ax in axes.reshape(-1)[len(year_months) :]:
