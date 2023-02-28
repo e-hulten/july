@@ -57,7 +57,8 @@ def cal_heatmap(
     cmax: Optional[int] = None,
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
-    lws:Optional[float] = 0.25
+    lws:Optional[float] = 0.25,
+    month_grid_linewidth[float]=1
 ):
     if not ax:
         figsize = (12, 5) if horizontal else (5, 12)
@@ -94,7 +95,7 @@ def cal_heatmap(
     if year_label:
         add_year_label(ax, dates, horizontal)
     if month_grid:
-        add_month_grid(ax, dates, cal, horizontal, month_grid_color)
+        add_month_grid(ax, dates, cal, horizontal, month_grid_color, month_grid_linewidth)
     if colorbar:
         add_colorbar(pc, fig, ax, bbox, cbar_label_format)
     if title:
@@ -275,13 +276,13 @@ def get_month_outline(dates, month_grid, horizontal, month):
     return coords[:, [1, 0]] if horizontal else coords
 
 
-def add_month_grid(ax, dates, month_grid, horizontal, color):
+def add_month_grid(ax, dates, month_grid, horizontal, color, month_grid_linewidth):
     months = set([d.month for d in dates])
     for month in months:
         coords = get_month_outline(
             dates, month_grid, horizontal=horizontal, month=month
         )
-        ax.plot(coords[:, 0], coords[:, 1], color=color, linewidth=1)
+        ax.plot(coords[:, 0], coords[:, 1], color=color, linewidth=month_grid_linewidth)
 
     # Pad axes so plotted line appears uniform also along edges.
     ax.set_xlim(ax.get_xlim()[0] - 0.1, ax.get_xlim()[1] + 0.1)
