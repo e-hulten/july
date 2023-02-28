@@ -36,7 +36,7 @@ def heatmap(
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
     lws: Optional[float]=0.25,
-    month_grid_linewidth: Optiona[float]=1,
+    month_grid_linewidth: Optional[float]=1,
     **kwargs
 ) -> Axes:
     """Create heatmap of input dates and data.
@@ -122,7 +122,7 @@ def month_plot(
     ax: Optional[Axes] = None,
     lws: Optional[float]=0.25,
     month_grid_color: str = "black",
-    month_grid_linewidth: Optiona[float]=1,
+    month_grid_linewidth: Optional[float]=1,
     **kwargs
 ) -> Axes:
     """Create calendar shaped heatmap of one month in input dates and data.
@@ -237,7 +237,7 @@ def calendar_plot(
     figsize: Optional[Tuple[float, float]] = None,
     lws: Optional[float]=0.25,
     month_grid_color: str = "black",
-    month_grid_linewidth: Optiona[float]=1,
+    month_grid_linewidth: Optional[float]=1,
     **kwargs
 ) -> Axes:
     """Create calendar shaped heatmap of all months im input dates and data.
