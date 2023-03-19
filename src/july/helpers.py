@@ -57,6 +57,7 @@ def cal_heatmap(
     cmax: Optional[int] = None,
     cbar_label_format: Optional[str] = None,
     ax: Optional[Axes] = None,
+    filename: str = None,
 ):
     if not ax:
         figsize = (12, 5) if horizontal else (5, 12)
@@ -100,6 +101,10 @@ def cal_heatmap(
         ax.set_title(title)
 
     ax.set_frame_on(frame_on)
+    
+    if filename is not None:
+        plt.savefig(filename)
+        
     return ax
 
 
