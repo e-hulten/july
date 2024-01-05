@@ -222,7 +222,7 @@ def calendar_plot(
     weeknum_label: bool = True,
     month_label: bool = True,
     value_format: str = "int",
-    title: bool = True,
+    title: Optional[str] = None,
     ncols: int = 4,
     figsize: Optional[Tuple[float, float]] = None,
     **kwargs
@@ -293,7 +293,6 @@ def calendar_plot(
         ax.set_visible(False)
 
     plt.subplots_adjust(wspace=0.75, hspace=0.5)
-    if title:
-        plt.suptitle(get_calendar_title(years), fontsize="x-large", y=1.03)
+    plt.suptitle(title if title else get_calendar_title(years), fontsize="x-large", y=1.03)
 
     return axes
