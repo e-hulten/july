@@ -51,5 +51,5 @@ def update_rcparams(
     rcmod["figure.dpi"] = dpi
     rcmod.update(rc_params_dict)
     with warnings.catch_warnings():
-        warnings.simplefilter("ignore", mpl.cbook.MatplotlibDeprecationWarning)
+        warnings.simplefilter("ignore", mpl.MatplotlibDeprecationWarning)
         mpl.rcParams.update(rcmod)
