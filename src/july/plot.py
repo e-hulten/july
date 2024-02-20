@@ -292,7 +292,7 @@ def calendar_plot(
     for ax in axes.reshape(-1)[len(year_months) :]:
         ax.set_visible(False)
 
-    plt.subplots_adjust(wspace=0.75, hspace=0.5)
-    plt.suptitle(title if title else get_calendar_title(years), fontsize="x-large", y=1.03)
+    plt.subplots_adjust(wspace=0.75, hspace=0.22, top=0.80)
+    plt.suptitle(title if title else get_calendar_title(years), fontsize="x-large", y=0.95)
 
     return axes
